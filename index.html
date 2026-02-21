@@ -1,0 +1,1032 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>[NAME] | Visual Design & Motion</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #080808;
+    --text: #F9F9F9;
+    --accent: #BDBDBD;
+    --muted: #4a4a4a;
+    --border: rgba(189,189,189,0.12);
+    --serif: 'Cormorant Garamond', Georgia, serif;
+    --sans: 'Inter', sans-serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-weight: 300;
+    font-size: 15px;
+    line-height: 1.6;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* ── Custom Cursor ── */
+  .cursor {
+    position: fixed;
+    width: 8px; height: 8px;
+    background: var(--text);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%,-50%);
+    transition: transform 0.1s ease, width 0.3s ease, height 0.3s ease, background 0.3s ease;
+  }
+  .cursor-ring {
+    position: fixed;
+    width: 36px; height: 36px;
+    border: 1px solid rgba(249,249,249,0.35);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9998;
+    transform: translate(-50%,-50%);
+    transition: transform 0.18s ease, width 0.3s ease, height 0.3s ease, opacity 0.3s ease;
+  }
+  body:hover .cursor { opacity: 1; }
+  a:hover ~ .cursor, button:hover ~ .cursor { width: 14px; height: 14px; }
+
+  /* ── Grain overlay ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.035'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9000;
+    opacity: 0.4;
+  }
+
+  /* ── Scroll reveal ── */
+  .reveal {
+    opacity: 0;
+    transform: translateY(28px);
+    transition: opacity 0.9s cubic-bezier(0.16,1,0.3,1), transform 0.9s cubic-bezier(0.16,1,0.3,1);
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+  .reveal-delay-1 { transition-delay: 0.1s; }
+  .reveal-delay-2 { transition-delay: 0.22s; }
+  .reveal-delay-3 { transition-delay: 0.34s; }
+  .reveal-delay-4 { transition-delay: 0.46s; }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.6rem 3.5rem;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.4s ease, background 0.4s ease;
+  }
+  nav.scrolled {
+    border-bottom-color: var(--border);
+    background: rgba(8,8,8,0.82);
+  }
+  .nav-logo {
+    font-family: var(--serif);
+    font-size: 1.1rem;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    color: var(--text);
+    text-decoration: none;
+  }
+  .nav-links {
+    display: flex;
+    gap: 2.8rem;
+    list-style: none;
+  }
+  .nav-links a {
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    text-decoration: none;
+    transition: color 0.25s;
+    position: relative;
+  }
+  .nav-links a::after {
+    content: '';
+    position: absolute;
+    bottom: -3px; left: 0;
+    width: 0; height: 1px;
+    background: var(--text);
+    transition: width 0.3s ease;
+  }
+  .nav-links a:hover { color: var(--text); }
+  .nav-links a:hover::after { width: 100%; }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    align-items: center;
+    padding: 8rem 3.5rem 5rem;
+    position: relative;
+  }
+  .hero::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 60% 70% at 80% 50%, rgba(189,189,189,0.03) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero-left { padding-right: 4rem; }
+
+  .hero-eyebrow {
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .hero-eyebrow::before {
+    content: '';
+    display: inline-block;
+    width: 2.5rem;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  .hero-headline {
+    font-family: var(--serif);
+    font-size: clamp(3.2rem, 6vw, 5.8rem);
+    font-weight: 300;
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+    margin-bottom: 0.3rem;
+  }
+  .hero-headline em {
+    font-style: italic;
+    color: var(--accent);
+  }
+
+  .hero-sub {
+    font-family: var(--serif);
+    font-size: clamp(1.1rem, 2vw, 1.4rem);
+    font-weight: 300;
+    font-style: italic;
+    color: var(--accent);
+    margin-bottom: 3.5rem;
+    line-height: 1.5;
+  }
+
+  .hero-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 1rem;
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text);
+    text-decoration: none;
+    padding: 1rem 2rem;
+    border: 1px solid var(--border);
+    transition: border-color 0.3s, background 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-cta::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(249,249,249,0.04);
+    transform: translateX(-100%);
+    transition: transform 0.4s ease;
+  }
+  .hero-cta:hover::before { transform: translateX(0); }
+  .hero-cta:hover { border-color: rgba(189,189,189,0.4); }
+  .hero-cta svg { transition: transform 0.3s; }
+  .hero-cta:hover svg { transform: translateX(4px); }
+
+  /* Showreel */
+  .hero-right {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .showreel-wrap {
+    position: relative;
+    width: min(320px, 42vw);
+    aspect-ratio: 9/16;
+  }
+  .showreel-frame {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(160deg, #161616 0%, #0f0f0f 100%);
+    border: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .showreel-frame::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(189,189,189,0.04) 0%, transparent 60%);
+  }
+  .showreel-corner {
+    font-size: 0.6rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .showreel-center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.2rem;
+  }
+  .play-btn {
+    width: 60px; height: 60px;
+    border: 1px solid rgba(249,249,249,0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s, border-color 0.3s;
+    animation: pulse-ring 2.5s ease-in-out infinite;
+  }
+  .play-btn:hover { transform: scale(1.1); border-color: rgba(249,249,249,0.5); }
+  @keyframes pulse-ring {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(249,249,249,0.08); }
+    50% { box-shadow: 0 0 0 12px rgba(249,249,249,0); }
+  }
+  .showreel-label {
+    font-family: var(--serif);
+    font-size: 1.2rem;
+    font-weight: 300;
+    letter-spacing: 0.1em;
+    text-align: center;
+  }
+  .showreel-tags {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+  .showreel-tag {
+    font-size: 0.58rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .showreel-tag::before {
+    content: '';
+    width: 16px; height: 1px;
+    background: var(--muted);
+  }
+  .showreel-scanline {
+    position: absolute;
+    left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(189,189,189,0.06), transparent);
+    animation: scanline 4s linear infinite;
+  }
+  @keyframes scanline {
+    0% { top: 0; }
+    100% { top: 100%; }
+  }
+  .showreel-glow {
+    position: absolute;
+    width: 200px; height: 200px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(189,189,189,0.04) 0%, transparent 70%);
+    top: 50%; left: 50%;
+    transform: translate(-50%,-50%);
+  }
+
+  /* ── DIVIDER ── */
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 0 3.5rem;
+  }
+
+  /* ── MARQUEE ── */
+  .marquee-wrap {
+    overflow: hidden;
+    padding: 1.8rem 0;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+  .marquee-track {
+    display: flex;
+    width: max-content;
+    animation: marquee 22s linear infinite;
+  }
+  .marquee-track:hover { animation-play-state: paused; }
+  @keyframes marquee {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+  .marquee-item {
+    font-family: var(--serif);
+    font-size: 0.78rem;
+    font-style: italic;
+    letter-spacing: 0.15em;
+    color: var(--muted);
+    padding: 0 3rem;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 3rem;
+  }
+  .marquee-dot {
+    width: 3px; height: 3px;
+    border-radius: 50%;
+    background: var(--muted);
+    display: inline-block;
+  }
+
+  /* ── SECTION ── */
+  section { padding: 7rem 3.5rem; }
+
+  .section-label {
+    font-size: 0.62rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 4rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* ── PORTFOLIO GRID ── */
+  .grid-wrap {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    grid-template-rows: auto;
+    gap: 1.5rem;
+  }
+
+  .project-card {
+    position: relative;
+    overflow: hidden;
+    background: #111;
+    border: 1px solid var(--border);
+    cursor: none;
+  }
+  .project-card:nth-child(1) { grid-column: 1 / 7; grid-row: 1; aspect-ratio: 16/10; }
+  .project-card:nth-child(2) { grid-column: 7 / 10; grid-row: 1; aspect-ratio: 9/16; }
+  .project-card:nth-child(3) { grid-column: 10 / 13; grid-row: 1; aspect-ratio: 9/16; }
+  .project-card:nth-child(4) { grid-column: 1 / 5; grid-row: 2; aspect-ratio: 4/3; }
+  .project-card:nth-child(5) { grid-column: 5 / 9; grid-row: 2; aspect-ratio: 4/3; }
+  .project-card:nth-child(6) { grid-column: 9 / 13; grid-row: 2; aspect-ratio: 4/3; }
+
+  .project-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .project-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  /* Placeholder gradients per card */
+  .card-grad-1 { background: linear-gradient(135deg, #1a1a1a 0%, #0d0d0d 100%); }
+  .card-grad-2 { background: linear-gradient(180deg, #181818 0%, #0a0a0a 100%); }
+  .card-grad-3 { background: linear-gradient(180deg, #131313 0%, #0c0c0c 100%); }
+  .card-grad-4 { background: linear-gradient(135deg, #151515 0%, #0e0e0e 100%); }
+  .card-grad-5 { background: linear-gradient(135deg, #161616 0%, #0b0b0b 100%); }
+  .card-grad-6 { background: linear-gradient(135deg, #141414 0%, #0d0d0d 100%); }
+
+  .placeholder-inner {
+    text-align: center;
+    pointer-events: none;
+  }
+  .placeholder-num {
+    font-family: var(--serif);
+    font-size: clamp(2rem, 5vw, 4rem);
+    font-weight: 300;
+    color: rgba(189,189,189,0.08);
+    line-height: 1;
+    margin-bottom: 0.5rem;
+  }
+  .placeholder-type {
+    font-size: 0.58rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: rgba(189,189,189,0.2);
+  }
+
+  .project-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(8,8,8,0.88);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 2rem;
+    opacity: 0;
+    transform: translateY(6px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+  }
+  .project-card:hover .project-overlay { opacity: 1; transform: translateY(0); }
+
+  .project-cat {
+    font-size: 0.6rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.6rem;
+  }
+  .project-title {
+    font-family: var(--serif);
+    font-size: clamp(1rem, 2vw, 1.5rem);
+    font-weight: 400;
+    line-height: 1.2;
+    margin-bottom: 1rem;
+  }
+  .project-link {
+    font-size: 0.65rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: color 0.25s;
+  }
+  .project-link:hover { color: var(--text); }
+  .project-link svg { transition: transform 0.25s; }
+  .project-link:hover svg { transform: translateX(4px); }
+
+  /* ── EXPERTISE ── */
+  .expertise-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+    border: 1px solid var(--border);
+  }
+  .expertise-col {
+    padding: 3.5rem 3rem;
+    border-right: 1px solid var(--border);
+    position: relative;
+  }
+  .expertise-col:last-child { border-right: none; }
+
+  .expertise-num {
+    font-family: var(--serif);
+    font-size: 0.75rem;
+    font-weight: 300;
+    color: var(--muted);
+    margin-bottom: 2.5rem;
+    letter-spacing: 0.1em;
+  }
+  .expertise-title {
+    font-family: var(--serif);
+    font-size: 1.6rem;
+    font-weight: 300;
+    line-height: 1.2;
+    margin-bottom: 2rem;
+  }
+  .expertise-items {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+  }
+  .expertise-items li {
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+  }
+  .expertise-items li::before {
+    content: '';
+    width: 12px; height: 1px;
+    background: var(--muted);
+    flex-shrink: 0;
+  }
+
+  /* ── ABOUT ── */
+  .about-inner {
+    display: grid;
+    grid-template-columns: 1fr 1.6fr;
+    gap: 8rem;
+    align-items: start;
+  }
+  .about-left {}
+  .about-heading {
+    font-family: var(--serif);
+    font-size: clamp(2.4rem, 4vw, 4rem);
+    font-weight: 300;
+    line-height: 1.1;
+    margin-bottom: 2.5rem;
+  }
+  .about-heading em { font-style: italic; color: var(--accent); }
+
+  .about-stat {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    margin-top: 3rem;
+    padding-top: 2.5rem;
+    border-top: 1px solid var(--border);
+  }
+  .stat-num {
+    font-family: var(--serif);
+    font-size: 2.8rem;
+    font-weight: 300;
+    line-height: 1;
+  }
+  .stat-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .about-right {}
+  .about-body {
+    font-size: 0.92rem;
+    line-height: 1.9;
+    color: var(--accent);
+    margin-bottom: 2.5rem;
+  }
+  .about-body strong {
+    color: var(--text);
+    font-weight: 400;
+  }
+
+  .edu-card {
+    border: 1px solid var(--border);
+    padding: 2rem;
+    margin-top: 2rem;
+  }
+  .edu-label {
+    font-size: 0.6rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 1rem;
+  }
+  .edu-degree {
+    font-family: var(--serif);
+    font-size: 1.15rem;
+    font-weight: 400;
+    margin-bottom: 0.4rem;
+  }
+  .edu-school {
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    color: var(--accent);
+  }
+
+  /* ── CONNECT ── */
+  .connect-inner {
+    text-align: center;
+    max-width: 680px;
+    margin: 0 auto;
+  }
+  .connect-heading {
+    font-family: var(--serif);
+    font-size: clamp(2.8rem, 5vw, 5rem);
+    font-weight: 300;
+    line-height: 1.1;
+    margin-bottom: 1.5rem;
+  }
+  .connect-heading em { font-style: italic; color: var(--accent); }
+  .connect-sub {
+    font-size: 0.82rem;
+    color: var(--accent);
+    margin-bottom: 3.5rem;
+    letter-spacing: 0.04em;
+  }
+  .connect-email {
+    font-family: var(--serif);
+    font-size: clamp(1.2rem, 2.5vw, 2rem);
+    color: var(--text);
+    text-decoration: none;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 0.3rem;
+    transition: border-color 0.3s;
+    display: inline-block;
+    margin-bottom: 3rem;
+  }
+  .connect-email:hover { border-color: var(--accent); }
+
+  .social-links {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    list-style: none;
+  }
+  .social-links a {
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.25s;
+  }
+  .social-links a:hover { color: var(--text); }
+
+  /* ── FOOTER ── */
+  footer {
+    padding: 2rem 3.5rem;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .footer-copy {
+    font-size: 0.62rem;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+  }
+
+  /* ── MOBILE ── */
+  @media (max-width: 900px) {
+    nav { padding: 1.4rem 1.5rem; }
+    .nav-links { gap: 1.8rem; }
+    .hero { grid-template-columns: 1fr; padding: 7rem 1.5rem 4rem; text-align: center; gap: 3rem; }
+    .hero-left { padding-right: 0; }
+    .hero-eyebrow { justify-content: center; }
+    .hero-right { justify-content: center; }
+    .showreel-wrap { width: min(220px, 55vw); }
+    section { padding: 5rem 1.5rem; }
+    .divider { margin: 0 1.5rem; }
+
+    .grid-wrap {
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: auto;
+    }
+    .project-card:nth-child(1) { grid-column: 1 / -1; grid-row: auto; aspect-ratio: 16/9; }
+    .project-card:nth-child(2) { grid-column: 1; grid-row: auto; aspect-ratio: 9/16; }
+    .project-card:nth-child(3) { grid-column: 2; grid-row: auto; aspect-ratio: 9/16; }
+    .project-card:nth-child(4),
+    .project-card:nth-child(5),
+    .project-card:nth-child(6) { grid-column: auto; grid-row: auto; aspect-ratio: 4/3; }
+
+    .expertise-grid { grid-template-columns: 1fr; }
+    .expertise-col { border-right: none; border-bottom: 1px solid var(--border); }
+    .expertise-col:last-child { border-bottom: none; }
+
+    .about-inner { grid-template-columns: 1fr; gap: 3rem; }
+    footer { flex-direction: column; gap: 1rem; text-align: center; }
+  }
+
+  @media (max-width: 540px) {
+    .nav-links { display: none; }
+    .hero-headline { font-size: 2.6rem; }
+    .grid-wrap { grid-template-columns: 1fr; }
+    .project-card:nth-child(2),
+    .project-card:nth-child(3) { aspect-ratio: 9/16; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Custom Cursor -->
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- NAV -->
+<nav id="navbar">
+  <a class="nav-logo" href="#">[NAME]</a>
+  <ul class="nav-links">
+    <li><a href="#work">Selected Work</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#connect">Connect</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="hero-left">
+    <div class="hero-eyebrow reveal">Athens, GR — Available Worldwide</div>
+    <h1 class="hero-headline reveal reveal-delay-1">[NAME]<br><em>Visual Design</em><br>&amp; Motion</h1>
+    <p class="hero-sub reveal reveal-delay-2">Adapting high-end aesthetics<br>to diverse digital needs.</p>
+    <a href="#work" class="hero-cta reveal reveal-delay-3">
+      View Selected Work
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+        <path d="M1 7H13M7 1L13 7L7 13" stroke="currentColor" stroke-width="1"/>
+      </svg>
+    </a>
+  </div>
+  <div class="hero-right reveal reveal-delay-2">
+    <div class="showreel-wrap">
+      <div class="showreel-frame">
+        <div class="showreel-scanline"></div>
+        <div class="showreel-glow"></div>
+        <div class="showreel-corner">2024</div>
+        <div class="showreel-center">
+          <div class="play-btn">
+            <svg width="14" height="16" viewBox="0 0 14 16" fill="none">
+              <path d="M1 1L13 8L1 15V1Z" stroke="#F9F9F9" stroke-width="1" fill="none"/>
+            </svg>
+          </div>
+          <div class="showreel-label">Showreel<br>2024</div>
+        </div>
+        <div class="showreel-tags">
+          <div class="showreel-tag">Motion Design</div>
+          <div class="showreel-tag">Brand Identity</div>
+          <div class="showreel-tag">Social Content</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- MARQUEE -->
+<div class="marquee-wrap">
+  <div class="marquee-track">
+    <div class="marquee-item">Visual Identity <span class="marquee-dot"></span> Motion Graphics <span class="marquee-dot"></span> Brand Strategy <span class="marquee-dot"></span> Reels &amp; Shorts <span class="marquee-dot"></span> Post-Production <span class="marquee-dot"></span> Editorial Design <span class="marquee-dot"></span> Digital Assets <span class="marquee-dot"></span> Art Direction <span class="marquee-dot"></span></div>
+    <div class="marquee-item">Visual Identity <span class="marquee-dot"></span> Motion Graphics <span class="marquee-dot"></span> Brand Strategy <span class="marquee-dot"></span> Reels &amp; Shorts <span class="marquee-dot"></span> Post-Production <span class="marquee-dot"></span> Editorial Design <span class="marquee-dot"></span> Digital Assets <span class="marquee-dot"></span> Art Direction <span class="marquee-dot"></span></div>
+  </div>
+</div>
+
+<!-- WORK -->
+<section id="work">
+  <div class="section-label reveal">Selected Work</div>
+  <div class="grid-wrap">
+
+    <!-- Card 1: Wide landscape -->
+    <div class="project-card reveal">
+      <div class="project-placeholder card-grad-1">
+        <div class="placeholder-inner">
+          <div class="placeholder-num">01</div>
+          <div class="placeholder-type">Brand Campaign</div>
+        </div>
+      </div>
+      <div class="project-overlay">
+        <div class="project-cat">Branding · Art Direction</div>
+        <div class="project-title">Monolith — Visual Identity System</div>
+        <a href="#" class="project-link">View Project <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1 6H11M6 1L11 6L6 11" stroke="currentColor" stroke-width="1"/></svg></a>
+      </div>
+    </div>
+
+    <!-- Card 2: Vertical (Reel format) -->
+    <div class="project-card reveal reveal-delay-1">
+      <div class="project-placeholder card-grad-2">
+        <div class="placeholder-inner">
+          <div class="placeholder-num">02</div>
+          <div class="placeholder-type">9:16 Reel</div>
+        </div>
+      </div>
+      <div class="project-overlay">
+        <div class="project-cat">Motion Design · Social Media</div>
+        <div class="project-title">Kinetic Product Launch Reel</div>
+        <a href="#" class="project-link">View Project <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1 6H11M6 1L11 6L6 11" stroke="currentColor" stroke-width="1"/></svg></a>
+      </div>
+    </div>
+
+    <!-- Card 3: Vertical (Short) -->
+    <div class="project-card reveal reveal-delay-2">
+      <div class="project-placeholder card-grad-3">
+        <div class="placeholder-inner">
+          <div class="placeholder-num">03</div>
+          <div class="placeholder-type">YouTube Short</div>
+        </div>
+      </div>
+      <div class="project-overlay">
+        <div class="project-cat">Video Editing · Motion</div>
+        <div class="project-title">Corporate Event Sizzle Reel</div>
+        <a href="#" class="project-link">View Project <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1 6H11M6 1L11 6L6 11" stroke="currentColor" stroke-width="1"/></svg></a>
+      </div>
+    </div>
+
+    <!-- Card 4 -->
+    <div class="project-card reveal reveal-delay-1">
+      <div class="project-placeholder card-grad-4">
+        <div class="placeholder-inner">
+          <div class="placeholder-num">04</div>
+          <div class="placeholder-type">Print / Digital</div>
+        </div>
+      </div>
+      <div class="project-overlay">
+        <div class="project-cat">Print · Editorial</div>
+        <div class="project-title">Annual Report — Typographic Suite</div>
+        <a href="#" class="project-link">View Project <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1 6H11M6 1L11 6L6 11" stroke="currentColor" stroke-width="1"/></svg></a>
+      </div>
+    </div>
+
+    <!-- Card 5 -->
+    <div class="project-card reveal reveal-delay-2">
+      <div class="project-placeholder card-grad-5">
+        <div class="placeholder-inner">
+          <div class="placeholder-num">05</div>
+          <div class="placeholder-type">Web · UI</div>
+        </div>
+      </div>
+      <div class="project-overlay">
+        <div class="project-cat">Digital Marketing · Web</div>
+        <div class="project-title">Campaign Landing Page Design</div>
+        <a href="#" class="project-link">View Project <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1 6H11M6 1L11 6L6 11" stroke="currentColor" stroke-width="1"/></svg></a>
+      </div>
+    </div>
+
+    <!-- Card 6 -->
+    <div class="project-card reveal reveal-delay-3">
+      <div class="project-placeholder card-grad-6">
+        <div class="placeholder-inner">
+          <div class="placeholder-num">06</div>
+          <div class="placeholder-type">Social Content</div>
+        </div>
+      </div>
+      <div class="project-overlay">
+        <div class="project-cat">Social Media · Branding</div>
+        <div class="project-title">Instagram Content Series — F&amp;B</div>
+        <a href="#" class="project-link">View Project <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1 6H11M6 1L11 6L6 11" stroke="currentColor" stroke-width="1"/></svg></a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- EXPERTISE -->
+<section>
+  <div class="section-label reveal">Expertise</div>
+  <div class="expertise-grid">
+    <div class="expertise-col reveal">
+      <div class="expertise-num">01 /</div>
+      <div class="expertise-title">Visual<br>Identity</div>
+      <ul class="expertise-items">
+        <li>Brand Strategy & Positioning</li>
+        <li>Logo & Wordmark Design</li>
+        <li>Typography Systems</li>
+        <li>Brand Guidelines</li>
+        <li>Packaging & Collateral</li>
+        <li>Art Direction</li>
+      </ul>
+    </div>
+    <div class="expertise-col reveal reveal-delay-1">
+      <div class="expertise-num">02 /</div>
+      <div class="expertise-title">Video<br>Post-Production</div>
+      <ul class="expertise-items">
+        <li>Reels & Short-Form Content</li>
+        <li>Motion Graphics & VFX</li>
+        <li>Corporate Video Editing</li>
+        <li>Colour Grading</li>
+        <li>Event & Documentary Cuts</li>
+        <li>Animated Intros / Titles</li>
+      </ul>
+    </div>
+    <div class="expertise-col reveal reveal-delay-2">
+      <div class="expertise-num">03 /</div>
+      <div class="expertise-title">Digital Marketing<br>Assets</div>
+      <ul class="expertise-items">
+        <li>Social Media Campaigns</li>
+        <li>Banner & Display Ads</li>
+        <li>Landing Page Design</li>
+        <li>Email Template Design</li>
+        <li>Content Calendar Design</li>
+        <li>Presentation Design</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="section-label reveal">About</div>
+  <div class="about-inner">
+    <div class="about-left reveal">
+      <h2 class="about-heading">Eye for<br>detail.<br><em>Voice for</em><br>narrative.</h2>
+      <div class="about-stat">
+        <div class="stat-num">6+</div>
+        <div class="stat-label">Years across disciplines</div>
+      </div>
+    </div>
+    <div class="about-right reveal reveal-delay-1">
+      <p class="about-body">A multi-disciplinary designer and video editor working at the intersection of <strong>aesthetics and communication</strong>. Trained in the rigour of fine arts, applied to the demands of the digital world — delivering work that is both visually intelligent and strategically considered.</p>
+      <p class="about-body">Whether shaping a brand identity from scratch, cutting a high-performance campaign reel, or designing a social content system that scales — the approach remains the same: <strong>intentional craft, adapted to context.</strong></p>
+      <p class="about-body">Available for project-based collaborations, retainers, and agency partnerships across Europe and beyond.</p>
+      <div class="edu-card">
+        <div class="edu-label">Education & Formation</div>
+        <div class="edu-degree">MA in Digital Arts</div>
+        <div class="edu-school">Athens School of Fine Arts — The foundation of an eye for detail</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONNECT -->
+<section id="connect">
+  <div class="connect-inner">
+    <div class="section-label reveal" style="justify-content:center; text-align:center; margin-bottom:2rem;">Connect</div>
+    <h2 class="connect-heading reveal reveal-delay-1">Let's create<br><em>something</em><br>remarkable.</h2>
+    <p class="connect-sub reveal reveal-delay-2">Open to new projects, collaborations, and creative partnerships.</p>
+    <a href="mailto:hello@name.com" class="connect-email reveal reveal-delay-3">hello@name.com</a>
+    <ul class="social-links reveal reveal-delay-3">
+      <li><a href="#">Instagram</a></li>
+      <li><a href="#">Behance</a></li>
+      <li><a href="#">LinkedIn</a></li>
+      <li><a href="#">Vimeo</a></li>
+    </ul>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-copy">© 2024 [NAME]. All rights reserved.</div>
+  <div class="footer-copy">Athens, GR — Available Worldwide</div>
+</footer>
+
+<script>
+  // Custom cursor
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursorRing');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY;
+    cursor.style.left = mx + 'px';
+    cursor.style.top = my + 'px';
+  });
+  function animateRing() {
+    rx += (mx - rx) * 0.12;
+    ry += (my - ry) * 0.12;
+    ring.style.left = rx + 'px';
+    ring.style.top = ry + 'px';
+    requestAnimationFrame(animateRing);
+  }
+  animateRing();
+
+  document.querySelectorAll('a, button').forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      cursor.style.width = '14px';
+      cursor.style.height = '14px';
+      ring.style.width = '52px';
+      ring.style.height = '52px';
+      ring.style.opacity = '0.5';
+    });
+    el.addEventListener('mouseleave', () => {
+      cursor.style.width = '8px';
+      cursor.style.height = '8px';
+      ring.style.width = '36px';
+      ring.style.height = '36px';
+      ring.style.opacity = '1';
+    });
+  });
+
+  // Nav scroll state
+  const navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    navbar.classList.toggle('scrolled', window.scrollY > 40);
+  });
+
+  // Scroll reveal
+  const revealEls = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12 });
+  revealEls.forEach(el => observer.observe(el));
+
+  // Hero reveals on load
+  document.querySelectorAll('.hero .reveal').forEach((el, i) => {
+    setTimeout(() => el.classList.add('visible'), 300 + i * 160);
+  });
+</script>
+</body>
+</html>
